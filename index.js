@@ -1,4 +1,5 @@
 console.log("This is Project 2!");
+showTable();
 
 class Book {
     constructor(name, author, type) {
@@ -9,18 +10,52 @@ class Book {
 
 }
 
+function showTable(book) {
+    let books = localStorage.getItem("books");
+    if (books == null) {
+        booksObj = [];
+    } else {
+        booksObj = JSON.parse(books);
+    }
+    let tableBody = document.getElementById("tableBody");
+    let displayString = "";
+    booksObj.forEach(element => {
+
+        displayString += `<tr>
+            <td>${element.name}</td>
+            <td>${element.author}</td>
+            <td>${element.type}</td>
+            </tr>`
+    });
+    // tableBody.innerHTML = displayString;
+    if (booksObj.length != 0) {
+        tableBody.innerHTML = displayString;
+    } else {
+        tableBody.innerHTML = `Nothing to show! Use "Add a Note" section above to add notes.`;
+    }
+}
+
 class Display {
 
-    add(book) {
+    // add(book) {
+    //     let notes = localStorage.getItem("notes");
+    //     if (notes == null) {
+    //         notesObj = [];
+    //     } else {
+    //         notesObj = JSON.parse(notes);
+    //     }
+    //     let tableBody = document.getElementById("tableBody");
+    //     let displayString;
+    //     notesObj.forEach(element => {
 
-        let tableBody = document.getElementById("tableBody");
-        let displayString = `<tr>
-                                <td>${book.name}</td>
-                                <td>${book.author}</td>
-                                <td>${book.type}</td>
-                            </tr>`
-        tableBody.innerHTML += displayString;
-    }
+    //         displayString += `<tr>
+    //         <td>${element.name}</td>
+    //         <td>${element.author}</td>
+    //         <td>${element.type}</td>
+    //         </tr>`
+    //     });
+    //     tableBody.innerHTML = displayString;
+    // }
 
     clear() {
         let libraryForm = document.getElementById("libraryForm");
@@ -54,7 +89,6 @@ class Display {
 
     }
 
-
 }
 
 let libraryForm = document.getElementById('libraryForm');
@@ -67,6 +101,7 @@ libraryForm.addEventListener('submit', function (e) {
     let Cooking = document.getElementById('Cooking');
     let Comic = document.getElementById('Comic');
 
+
     if (Programming.checked) {
         type = Programming.value;
     }
@@ -76,16 +111,39 @@ libraryForm.addEventListener('submit', function (e) {
     else if (Comic.checked) {
         type = Comic.value;
     }
+    else {
+        display.show('danger', 'Sorry you cannot add this book');
+        return false;
+    }
 
+    let books = localStorage.getItem("books");
+    if (books == null) {
+        booksObj = [];
+    } else {
+        booksObj = JSON.parse(books);
+    }
+
+    // let myObj = {
+    //     name: name,
+    //     author: author,
+    //     type: type
+    // };
     let book = new Book(name, author, type);
+    booksObj.push(book);
+
+    localStorage.setItem("books", JSON.stringify(booksObj));
 
     let display = new Display();
 
     if (display.validate(book)) {
 
-        display.add(book);
+        // display.add(book);
+        showTable()
         display.clear();
         display.show('success', 'Your book has been successfully added')
+    }
+    else if (type == false) {
+        display.show('danger', 'Sorry you cannot add this book');
     }
     else {
         // Show error to the user
